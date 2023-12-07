@@ -1,3 +1,6 @@
+# Based upon the equations given in "Detecting gravitational waves from a cosmological first-order phase transition with LISA: an update', Caprini et al., 2020.
+# and "Shape of the acoustic gravitational wave power spectrum from a first order phase transition", Hindmarsh et al., 2020.
+
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import pi, sqrt
@@ -15,10 +18,10 @@ H_0 = (100 * 0.687) / 3.09e19  # Hubble Constant
 
 # Conversions of Bubble radius to beta and vice versa
 def Rstar_to_Beta(rstar, vw):
-    return (8*pi) ** (1/3)*vw/rstar
+    return (8*pi)**(1/3)*vw/rstar
 
 def Beta_to_Rstar(beta, vw):
-    return (8*pi)**(1/3)*vw/beta
+    return ((8.0*pi)**(1.0/3.0))*vw/beta
 
 # Define class for Powerspectrum, to be able to create multiple objects later
 class PowerSpectrum:
@@ -28,7 +31,7 @@ class PowerSpectrum:
         self.Tstar = Tstar
         self.vw = vw
         self.H_rstar = Beta_to_Rstar(self.betaoverH, self.vw)
-        self.h = 0.687
+        self.h = 0.678
         self.zp = 10
         self.gs = 106.75
         self.H_0 = 68.7 / 3.086e19  
@@ -46,7 +49,7 @@ class PowerSpectrum:
         return (s**3)*((7/(4+3*(s**2)))**(7/2))
     
     def fp_0(self):
-        return ((26e-6)*(1/self.H_rstar)*(self.zp/10)*(self.Tstar/100)**(self.gs/100)**(1/6))
+        return ((26.0e-6)*(1.0/self.H_rstar)*(self.zp/10.0)*(self.Tstar/100)**(self.gs/100)**(1.0/6.0))
   
     # Returns h^2 Omega_GW
     def Omega_GW(self, frequencies, Amp, f_peak):
@@ -68,7 +71,7 @@ if __name__ == "__main__":
   end_time = time.time()
   run_time = end_time - start_time
   print("Runtime:", run_time)
-
+ 
 # PS plot
   plt.loglog(frequencies, GW, color = 'g', label='GW signal')
   plt.loglog(frequencies, Noise, color ='m', label='Noise signal')

@@ -17,6 +17,7 @@ And the following class:
 
 import numpy as np
 import math
+from kinetic_energy_fraction_2 import KineticEnergyFraction
 
 try:
     from .espinosa import ubarf
@@ -62,7 +63,7 @@ def beta_to_rstar(beta, vw):
         Mean bubble separation
     """
 
-    return math.pow(8.0*math.pi,1.0/3.0)*vw/beta
+    return math.pow(8.0*np.pi,1.0/3.0)*vw/beta
 
 def get_SNR_value(fSens, omSens, duration,
                   Tstar=180.0, gstar=100, vw=0.9, alpha=0.1, BetaoverH=10):
@@ -143,7 +144,7 @@ class PowerSpectrum:
     def __init__(self,
                  BetaoverH = None,
                  Tstar = 180.0,
-                 gstar = 100,
+                 gstar = 106.75,
                  vw = None,
                  adiabaticRatio = 4.0/3.0,
                  zp = 10,
@@ -184,6 +185,7 @@ class PowerSpectrum:
         self.zp = zp
         self.alpha = alpha
         self.kturb = kturb
+        self.K = KineticEnergyFraction(self.alpha, self.vw)
 
         self.hstar = 16.5e-6*(self.Tstar/100.0) \
                      *np.power(self.gstar/100.0,1.0/6.0)
@@ -278,14 +280,17 @@ class PowerSpectrum:
         # particular value of the Hubble constant.
         return h_planck*h_planck*3.0 \
             *0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
-            *self.adiabaticRatio*self.adiabaticRatio \
-            *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)    
+           *np.power(self.K, 2.0)*self.H_rstar*self.Csw(fp)    
 
 benchmark1 = PowerSpectrum(50, 180, 100, 0.8, 4/3, 10, 0.6, 1.97/65, None, None)
-frequencies = np.logspace(-6, 1, 5000)
+f_low = np.arange(0.00003, 0.001, 0.000001)
+f_middle = np.arange(0.001, 0.01, 0.00005)
+f_high = np.arange(0.01, 0.5, 0.001)
+frequencies = np.concatenate((f_low, f_middle, f_high))
 GW = benchmark1.power_spectrum_sw(frequencies)
 peak = benchmark1.fsw()
 print(peak)
+
 
 import matplotlib.pyplot as plt
 plt.loglog(frequencies, GW)
