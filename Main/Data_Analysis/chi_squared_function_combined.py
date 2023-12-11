@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import minimize # Used to minimize for the parameters
 from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
-from combined_data_gen import make_data
+from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
 from SNR import calculate_snr_
 import time
 
@@ -33,7 +33,7 @@ N_c = 5
 # Generating the mock data, taking the mean and the standard deviation
 powerspectrum = PowerSpectrum(0.6, 50, 180, 0.6)
 
-DATA = make_data(frequencies, N_c, 3, 15, powerspectrum)
+DATA = make_data_no_DWD(frequencies, N_c, 3, 15, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?
 standard_deviation = np.std(DATA, axis=1)
 

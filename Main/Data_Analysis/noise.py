@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt
+from giese_lisa_sens import Omega_N
 
 
 # Constants
@@ -53,3 +54,22 @@ def lisa_noise_2(f, alpha, beta, gamma, k, A, P):
         return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n()
 
     return DWD_noise_2() + Omega_N()
+
+if __name__ == "__main__":
+    f_low = np.arange(0.00003, 0.001, 0.000001)
+    f_middle = np.arange(0.001, 0.01, 0.00005)
+    f_high = np.arange(0.01, 0.5, 0.001)
+    frequencies = np.concatenate((f_low, f_middle, f_high)) 
+    DWD_Noise_1 = lisa_noise_1(frequencies, 7.44e-14, 2.96e-7, -1.98, -2.6, 3, 15)
+    DWD_Noise_2 = lisa_noise_2(frequencies, 0.138, -221, 521, 1680, 3, 15)
+    Sensitivity = Omega_N(frequencies, 3, 15)
+    plt.loglog(frequencies, DWD_Noise_1, label='DWD Noise 1')
+    plt.loglog(frequencies, DWD_Noise_2, label='DWD_Noise_2')
+    plt.loglog(frequencies, Sensitivity, label='LISA Sensitivity')
+    plt.title(r'$LISA$' + " " + r'$\Omega$' + " " + '$Signal$')
+    plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
+    plt.ylabel(r'$h^{2}\Omega(f)$')
+    plt.legend()
+    plt.grid = 'True'
+    plt.savefig('Lisa sensitivity + DWD noise fits')
+    plt.show()
