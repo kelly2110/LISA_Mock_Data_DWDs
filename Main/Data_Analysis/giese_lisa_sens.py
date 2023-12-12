@@ -13,10 +13,7 @@ f_s = c/(2*pi*L)
 # Noise Parameters, P = 15, A = 3
 
 
-# This is now h^2*Omega_N, without h^2 would be a factor of 4
-def Omega_N(f, A, P):
-    return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n(f, A, P)
-                   
+# This is now h^2*Omega_N, without h^2 would be a factor of 4                   
 def S_n(f, A, P): #Strain sensitivity
     return ((10/3)*(1+ 0.6*((2*pi*f*L/c)**2))*(P_oms(f, P) + (3 + np.cos((4*pi*f*L)/c))*P_acc(f, A)))/(((2*pi*f*L/c))**2)
 
@@ -25,6 +22,9 @@ def P_oms(f,P):
 
 def P_acc(f,A):
     return (A**2)*((10**-15)**2)*(1 + ((0.0004/f)**2))*(1 + (f/0.008)**4)*(1/(4*pi*pi*f*f*c*c))
+
+def Omega_N(f, A, P):
+    return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n(f, A, P)
 
 if __name__ == "__main__":
     f_low = np.arange(0.00003, 0.001, 0.000001)

@@ -5,6 +5,7 @@ from scipy.optimize import minimize # Used to minimize for the parameters
 from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
+from noise import lisa_noise_1, lisa_noise_2
 from SNR import calculate_snr_
 import time
 
@@ -12,8 +13,8 @@ import time
 start_time = time.time()
 def chi_squared(params, frequencies, powerspectrum, mean_sample_data, standard_deviation):
     chi_2 = []
-    A, P, Amp, f_peak = params
-    noise_model = Omega_N(frequencies, A, P)
+    A1, A2, alpha1, alpha2, A, P , Amp, f_peak = params
+    noise_model = lisa_noise_1(frequencies, A1, A2, alpha1, alpha2, A, P)
     GW_model = powerspectrum.Omega_GW(frequencies, Amp, f_peak)
 
     # Calculate the chi-squared value
@@ -28,26 +29,30 @@ f_low = np.arange(0.00003, 0.001, 0.000001)
 f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high))
-N_c = 50
+N_c = 94
 
 # Generating the mock data, taking the mean and the standard deviation
-powerspectrum = PowerSpectrum(0.6, 50, 180, 0.6)
+powerspectrum = PowerSpectrum(0.6, 50, 180, 0.8)
 
 DATA = make_data_no_DWD(frequencies, N_c, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?
 standard_deviation = np.std(DATA, axis=1)
 
 # Initial parameter guess
-initial_params = [3, 15, 1e-9, 1e-3] 
+initial_params = [7.44e-14, 2.96e-7, -1.98, -2.6, 3, 15, 1e-9, 1e-3] 
 
 # Minimize the chi-squared function
-result = minimize(chi_squared, initial_params, args=(frequencies, powerspectrum, mean_sample_data, standard_deviation), method='Powell', tol=1e-11)
+result = minimize(chi_squared, initial_params, args=(frequencies, powerspectrum, mean_sample_data, standard_deviation), method='Powell', tol=1e-20)
 Chi_Squared_bf = result.fun
 print(f"Best fit Chi Squared value:", Chi_Squared_bf)
 
 # Extracting the optimized parameters
-optimized_A, optimized_P, optimized_Amp, optimized_f_p0 = result.x
-print(f"Optimized Am: {optimized_A}")
+optimized_A1, optimized_A2, optimized_alpha1, optimized_alpha2, optimized_A, optimized_P, optimized_Amp, optimized_f_p0 = result.x
+print(f"Optimized A1: {optimized_A1}")
+print(f"Optimized A2: {optimized_A2}")
+print(f"Optimized alpha1: {optimized_alpha1}")
+print(f"Optimized alpha2: {optimized_alpha2}")
+print(f"Optimized A: {optimized_A}")
 print(f"Optimized P: {optimized_P}")
 print(f"Optimized Amplitude: {optimized_Amp}")
 print(f"Optimized Peak Frequency: {optimized_f_p0}")
@@ -61,7 +66,7 @@ else:
 
 # AIC calculation, adjust k as necessary
 def calculate_aic(chi):
-    k = 4
+    k = 8
     AIC = chi + 2*k
     print("The AIC value is:", AIC)
     return AIC
@@ -77,7 +82,7 @@ print(f"The run time is {run_time} seconds")
 optimized_signal = powerspectrum.Omega_GW(frequencies, optimized_Amp, optimized_f_p0)
 
 # Original signal
-original_signal = powerspectrum.Omega_GW(frequencies, initial_params[2], initial_params[3])
+original_signal = powerspectrum.Omega_GW(frequencies, initial_params[6], initial_params[7])
 
 # SNR Calculations 
 

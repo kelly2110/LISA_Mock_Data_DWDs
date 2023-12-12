@@ -1,22 +1,27 @@
+""" 3 functions for the LISA noise:
+    1: LISA Noise only
+    2: LISA Noise and DWD Noise Boileau et al.
+    3: LISA Noise and DWD Noise Robson & Cornish
+     
+    The noise parameters are given the values estimated in the literature """
+
 import numpy as np
 import matplotlib.pyplot as plt  
-from giese_lisa_sens import S_n, P_acc, P_oms, Omega_N
+from giese_lisa_sens import Omega_N
 from ps_rewritten import PowerSpectrum
-import time
 from noise import lisa_noise_1, lisa_noise_2
+import time
 
-
-def make_data_no_DWD(frequencies, N_c, A, P, PS):
+def make_data_no_DWD(frequencies, N_c, PS):
     def calculate_N():
-        total_noise = np.empty((len(frequencies), N_c))
+        total_noise = np.zeros((len(frequencies), N_c))
                 
         for i, f in enumerate(frequencies):
             for j in range(N_c):
-                G_1 = np.random.normal(loc=0.0, scale=np.sqrt(Omega_N(f, A, P)))
-                G_2 = np.random.normal(loc=0.0, scale=np.sqrt(Omega_N(f, A, P)))
+                G_1 = np.random.normal(loc=0.0, scale=np.sqrt(Omega_N(f, 3, 15)))
+                G_2 = np.random.normal(loc=0.0, scale=np.sqrt(Omega_N(f, 3, 15)))
                 N = (G_1**2 + G_2**2) / 2
                 total_noise[i, j] = N
-                print(total_noise)
         return total_noise
 
     def calculate_S():
@@ -33,11 +38,10 @@ def make_data_no_DWD(frequencies, N_c, A, P, PS):
     # Calculate noise and signal arrays and adding them together to form the data
     Total_Noise = calculate_N()
     Total_Signal = calculate_S()
-    Total_Data = Total_Noise + Total_Signal
-    print("Total Generated Data is:", Total_Data)
+    Total_Data = (Total_Noise + Total_Signal)
     return Total_Data
 
-""" def make_data_DWD_1(frequencies, N_c, PS):
+def make_data_DWD_1(frequencies, N_c, PS):
     def calculate_N():
         total_noise = np.zeros((len(frequencies), N_c))
                 
@@ -61,8 +65,9 @@ def make_data_no_DWD(frequencies, N_c, A, P, PS):
         return total_signal
 
     # Calculate noise and signal arrays and adding them together to form the data
-    Total_Data = calculate_N() + calculate_S()
-    print("Total Generated Data is:", Total_Data)
+    Total_Noise = calculate_N()
+    Total_Signal = calculate_S()
+    Total_Data = (Total_Noise + Total_Signal)
     return Total_Data
 
 def make_data_DWD_2(frequencies, N_c, PS):
@@ -89,9 +94,10 @@ def make_data_DWD_2(frequencies, N_c, PS):
         return total_signal
 
     # Calculate noise and signal arrays and adding them together to form the data
-    Total_Data = calculate_N() + calculate_S()
-    print("Total Generated Data is:", Total_Data)
-    return Total_Data """
+    Total_Noise = calculate_N()
+    Total_Signal = calculate_S()
+    Total_Data = np.mean((Total_Noise + Total_Signal), axis=1)
+    return Total_Data
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -101,24 +107,23 @@ if __name__ == "__main__":
     frequencies = np.concatenate((f_low, f_middle, f_high))
     PS = PowerSpectrum(0.6, 50, 180, 0.8)
     GW_model = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
-    DATA = make_data_no_DWD(frequencies, 5, 3, 15, PS)
-    print(DATA[0:5])
-    mean = np.mean(DATA, axis=1)
-    std_dev = np.std(DATA, axis=1)
+    DATA1 = make_data_no_DWD(frequencies, 94, PS)
+    DATA2 = make_data_DWD_1(frequencies, 94, PS)
+    DATA3 = make_data_DWD_2(frequencies, 94, PS)
+    Sensitivity = Omega_N(frequencies, 3, 15)
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"RunTime: {elapsed_time} seconds")
-
-    # Plotting sample and model data
-    plt.loglog(frequencies, mean, color='blue', label="Sample Data") # Sample data
-    plt.loglog(frequencies, GW_model, color='red', label="Model Signal")
-    plt.loglog(frequencies, Omega_N(frequencies, 3, 15), color='green', label="Model Noise") # Model Noise data
-    plt.legend()
-    plt.title(r'Sample vs Model Data Values for LISA Noise Signal')
+    plt.loglog(frequencies, Sensitivity, label='LISA Sensitvity')
+    plt.loglog(frequencies, GW_model, label='GW Signal')
+    plt.loglog(frequencies, DATA1, label='LISA Noise')
+    plt.loglog(frequencies, DATA2, label='DWD Noise 1')
+    plt.loglog(frequencies, DATA3, label='DWD Noise 2')
+    plt.title(r'$LISA$' + " " + r'$\Omega$' + " " + '$Mock Data Generation$')
     plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
     plt.ylabel(r'$h^{2}\Omega(f)$')
-    plt.grid = 'True'
-    plt.savefig("Sample_vs_Model_Noise_2")
+    plt.savefig('DWD Mock Data + LISA Sensitivity + GW Model')
+    plt.legend()
     plt.show()
 
 

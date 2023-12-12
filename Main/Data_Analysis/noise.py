@@ -29,7 +29,10 @@ def lisa_noise_1(f, A1, A2, alpha1, alpha2, A, P):
     def Omega_N():
         return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n()
 
-    return  DWD_noise_1() + Omega_N()
+    DWD = DWD_noise_1()
+    Sens = Omega_N()
+    lisa_noise_1 = DWD + Sens
+    return lisa_noise_1
 
 
 # DWD Noise Robson & Cornish
@@ -53,7 +56,10 @@ def lisa_noise_2(f, alpha, beta, gamma, k, A, P):
     def Omega_N():
         return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n()
 
-    return DWD_noise_2() + Omega_N()
+    DWD = DWD_noise_2()
+    Sens = Omega_N()
+    lisa_noise_2 = DWD + Sens
+    return lisa_noise_2
 
 if __name__ == "__main__":
     f_low = np.arange(0.00003, 0.001, 0.000001)
