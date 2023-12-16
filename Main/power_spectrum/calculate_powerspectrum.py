@@ -282,7 +282,7 @@ class PowerSpectrum:
             *0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
            *np.power(self.K, 2.0)*self.H_rstar*self.Csw(fp)    
 
-benchmark1 = PowerSpectrum(50, 180, 100, 0.8, 4/3, 10, 0.6, 1.97/65, None, None)
+benchmark1 = PowerSpectrum(50, 180, 106.75, 0.8, 4/3, 10, 0.6, 1.97/65, None, None)
 f_low = np.arange(0.00003, 0.001, 0.000001)
 f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)

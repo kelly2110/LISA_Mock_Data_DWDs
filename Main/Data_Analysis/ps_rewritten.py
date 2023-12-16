@@ -49,7 +49,7 @@ class PowerSpectrum:
         return (s**3)*((7/(4+3*(s**2)))**(7/2))
     
     def fp_0(self):
-        return ((26.0e-6)*(1.0/self.H_rstar)*(self.zp/10.0)*(self.Tstar/100)**(self.gs/100)**(1.0/6.0))
+        return ((26.0e-6)*(1.0/self.H_rstar)*(self.zp/10.0)*(self.Tstar/100)*(self.gs/100)**(1.0/6.0))
   
     # Returns h^2 Omega_GW
     def Omega_GW(self, frequencies, Amp, f_peak):

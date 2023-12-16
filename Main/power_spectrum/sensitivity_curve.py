@@ -11,7 +11,6 @@ Authors:
 """
 import math
 import numpy as np
-import matplotlib.pyplot as plt
 
 def Sh(f):
     """Compute strain sensitivity for frequency f."""
@@ -62,19 +61,15 @@ def main():
     
 #    import matplotlib.pyplot as plt
 
-    f_low = np.arange(0.00003, 0.001, 0.000001)
-    f_middle = np.arange(0.001, 0.01, 0.00005)
-    f_high = np.arange(0.01, 0.5, 0.001)
-    frequencies = np.concatenate((f_low, f_middle, f_high))
-    y = np.sqrt(Sh(frequencies))
-    z = OmSens(frequencies)
+    x = np.logspace(-6,1,2000)
+    y = np.sqrt(Sh(x))
+    z = OmSens(x)
     np.savetxt("ptplot_omega_sens.csv", z, delimiter=',')
-    for (mx,my,mz) in zip(frequencies,y,z):
+    for (mx,my,mz) in zip(x[0:10],y[0:10],z[0:10]):
         print("%g %g %g %g" % (mx, my, mz, 0.0))
-    
 
-    plt.loglog(frequencies, z)
-    plt.show()
+#    plt.loglog(x, np.sqrt(y))
+#    plt.show()
 
 
 if __name__ == '__main__':

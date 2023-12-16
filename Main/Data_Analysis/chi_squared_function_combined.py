@@ -31,7 +31,7 @@ frequencies = np.concatenate((f_low, f_middle, f_high))
 N_c = 50
 
 # Generating the mock data, taking the mean and the standard deviation
-powerspectrum = PowerSpectrum(0.6, 50, 180, 0.6)
+powerspectrum = PowerSpectrum(0.1, 50, 180, 0.6)
 
 DATA = make_data_no_DWD(frequencies, N_c, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?
