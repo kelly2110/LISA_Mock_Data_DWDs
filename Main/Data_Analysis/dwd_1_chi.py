@@ -6,7 +6,7 @@ from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
 from noise import lisa_noise_1, lisa_noise_2
-from SNR import calculate_snr_
+from SNR_calc import calculate_snr_
 import time
 
 # Defining the chi-squared function

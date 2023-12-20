@@ -1,6 +1,6 @@
-"""AnsÃ¤tze for calculating the SGWB power spectra
+"""Ansätze for calculating the SGWB power spectra
 
-This file contains the ansÃ¤tze needed to calculate the power spectrum from
+This file contains the ansätze needed to calculate the power spectrum from
 sound waves and from turbulence (although the latter is not used).
 Unless stated otherwise, the equations here follow those in M. Hindmarsh et al.
 Phys.Rev.D 96 (2017) 10, 103520, Phys.Rev.D 101 (2020) 8, 089902 (erratum)
@@ -17,10 +17,7 @@ And the following class:
 
 import numpy as np
 import math
-from kinetic_energy_fraction_2 import KineticEnergyFraction
-#from giese_lisa_sens import Omega_N
-#from SNR_calc import calculate_snr_
-from sensitivity_curve import OmSens
+
 try:
     from .espinosa import ubarf
     from .snr import *
@@ -32,7 +29,7 @@ except ImportError:
     from snr import *
 
 def rstar_to_beta(rstar, vw):
-    """Convert R_* to Beta_* for a given wall velocity
+    """Convert R_* to \Beta_* for a given wall velocity
 
     Parameters
     ----------
@@ -50,7 +47,7 @@ def rstar_to_beta(rstar, vw):
     return math.pow(8.0*math.pi,1.0/3.0)*vw/rstar
 
 def beta_to_rstar(beta, vw):
-    """Convert Beta_* to R_* for a given wall velocity
+    """Convert \Beta_* to R_* for a given wall velocity
 
     Parameters
     ----------
@@ -65,7 +62,7 @@ def beta_to_rstar(beta, vw):
         Mean bubble separation
     """
 
-    return math.pow(8.0*np.pi,1.0/3.0)*vw/beta
+    return math.pow(8.0*math.pi,1.0/3.0)*vw/beta
 
 def get_SNR_value(fSens, omSens, duration,
                   Tstar=180.0, gstar=100, vw=0.9, alpha=0.1, BetaoverH=10):
@@ -99,7 +96,7 @@ def get_SNR_value(fSens, omSens, duration,
         Signal-to-noise ratio
     """
 
-"""     ps = PowerSpectrum(Tstar=Tstar, gstar=gstar,
+    ps = PowerSpectrum(Tstar=Tstar, gstar=gstar,
                        vw=vw, alpha=alpha, BetaoverH=BetaoverH)
 
     snr, frange = StockBkg_ComputeSNR(fSens,
@@ -110,7 +107,7 @@ def get_SNR_value(fSens, omSens, duration,
                                       1.e-6,
                                       1)
 
-    return snr """
+    return snr
     
 class PowerSpectrum:
     """A class used to define the power spectrum
@@ -146,7 +143,7 @@ class PowerSpectrum:
     def __init__(self,
                  BetaoverH = None,
                  Tstar = 180.0,
-                 gstar = 106.75,
+                 gstar = 100,
                  vw = None,
                  adiabaticRatio = 4.0/3.0,
                  zp = 10,
@@ -187,7 +184,6 @@ class PowerSpectrum:
         self.zp = zp
         self.alpha = alpha
         self.kturb = kturb
-        self.K = KineticEnergyFraction(self.alpha, self.vw)
 
         self.hstar = 16.5e-6*(self.Tstar/100.0) \
                      *np.power(self.gstar/100.0,1.0/6.0)
@@ -282,21 +278,60 @@ class PowerSpectrum:
         # particular value of the Hubble constant.
         return h_planck*h_planck*3.0 \
             *0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
-           *np.power(self.K, 2.0)*self.H_rstar*self.Csw(fp)    
+            *self.adiabaticRatio*self.adiabaticRatio \
+            *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)    
 
-benchmark1 = PowerSpectrum(50, 180, 106.75, 0.8, 4/3, 10, 0.6, 1.97/65, None, None)
-f_low = np.arange(0.00003, 0.001, 0.000001)
-f_middle = np.arange(0.001, 0.01, 0.00005)
-f_high = np.arange(0.01, 0.5, 0.001)
-frequencies = np.concatenate((f_low, f_middle, f_high))
-GW = benchmark1.power_spectrum_sw(frequencies)
-Noise = OmSens(frequencies)
-peak = benchmark1.fsw()
-print(peak)
+    # The following three functions (*turb) are taken from 1512.06239.
+    # However, in later papers the contribution from turbulence is neglected,
+    # as further studies to understand turbulence are needed. As such, these
+    # three functions are not called anywhere in the code by default.
+    # However, these can still be turned on by overriding the sw_only flag.
+    def fturb(self):
+        """Calculate peak frequency for turbulence
 
+        This function follows equation 18 equation of 1512.06239.
+        """
 
+        return (27e-6)*(1.0/self.vw)*(self.BetaoverH)*(self.Tstar/100.0) \
+            *np.power(self.gstar/100,1.0/6.0)
 
-import matplotlib.pyplot as plt
-plt.loglog(frequencies, GW)
-plt.grid(True)
-plt.show()
+    def Sturb(self, f, fp):
+        """Calculate the spectral shape from turbulence
+
+        This function follows equation 17 equation of 1512.06239.
+        """
+
+        return np.power(fp,3.0)/(np.power(1 + fp, 11.0/3.0) \
+                                 *(1 + 8*math.pi*f/self.hstar))
+
+    def power_spectrum_turb(self, f):
+        """Calculate power spectrum from turbulence for a given frequency f
+
+        This function follows equation 16 equation of 1512.06239.
+        """
+
+        fp = f/self.fturb()
+        return (3.35e-4)/self.BetaoverH \
+            *np.power(self.kturb*self.alpha/(1 + self.alpha),3.0/2.0) \
+            *np.power(100/self.gstar,1.0/3.0)*self.vw*self.Sturb(f,fp)
+
+    def power_spectrum_sw_conservative(self, f):
+        """Calculate power spectrum from sound waves (conservative)
+
+        For the conservative estimate, take the shock time no larger than 1.
+        """
+
+        return min(self.H_tsh,1.0)*self.power_spectrum_sw(f)
+    
+    def power_spectrum(self, f):
+        """Calculate total power spectrum from sound waves and turbulence
+        """
+
+        return self.power_spectrum_sw(f) + self.power_spectrum_turb(f)
+
+    def power_spectrum_conservative(self, f):
+        """Calculate total power spectrum from sound waves (conservative) and turbulence
+        """
+
+        return self.power_spectrum_sw_conservative(f) + self.power_spectrum_turb(f)
+    

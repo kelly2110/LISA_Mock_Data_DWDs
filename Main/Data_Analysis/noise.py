@@ -61,7 +61,7 @@ def lisa_noise_2(f, alpha, beta, gamma, k, A, P):
     lisa_noise_2 = DWD + Sens
     return lisa_noise_2
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     f_low = np.arange(0.00003, 0.001, 0.000001)
     f_middle = np.arange(0.001, 0.01, 0.00005)
     f_high = np.arange(0.01, 0.5, 0.001)
@@ -78,4 +78,4 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid = 'True'
     plt.savefig('Lisa sensitivity + DWD noise fits')
-    plt.show()
+    plt.show() """

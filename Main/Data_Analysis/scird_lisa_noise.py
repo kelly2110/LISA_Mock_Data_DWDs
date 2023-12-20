@@ -22,6 +22,7 @@ def R(f):
 def Omega_S(f): #In reality this is h^2*Omega_S
     return ((2*pi**2)/(3*H_0**2))*(f**3)*S_h(f)
 
+if__name__ = '__main__'
 f = np.logspace(-6, 1, 8000)
 noise = np.sqrt(S_h(f))
 print(noise)

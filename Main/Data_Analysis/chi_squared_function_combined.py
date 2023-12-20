@@ -5,7 +5,7 @@ from scipy.optimize import minimize # Used to minimize for the parameters
 from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
-from SNR import calculate_snr_
+from SNR_calc import calculate_snr_
 import time
 
 # Defining the chi-squared function

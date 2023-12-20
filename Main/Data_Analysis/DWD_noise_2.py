@@ -9,7 +9,7 @@ f_s = c/(2*pi*L)
 h = 0.678
 H_0 = (100 * h)/(3.09e19)
 
-# Where do i get my values for A and alpha from here?
+
 def DWD_noise_2(f, alpha, beta, gamma, k): 
     def Sc(f):
         A = 9e-45
