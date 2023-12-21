@@ -18,7 +18,7 @@ frequencies = np.concatenate((f_low, f_middle, f_high)) """
 frequencies = np.logspace(-6, 1, 2000)
 H_0 = (100 * 0.687) / 3.09e19  # Hubble Constant
 
-# Conversions of Bubble radius to beta and vice versa
+# Conversions of Bubbl e radius to beta and vice versa
 def Rstar_to_Beta(rstar, vw):
     return (8*pi)**(1/3)*vw/rstar
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
   start_time = time.time()
   P1 = PowerSpectrum(0.4, 50, 180, 0.8)
   GW = (P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())) # Dit is mijn GW signaal
-  np.savetxt('Omega_GW_test.csv', GW, delimiter=',') # Slaat op als csv zodat ik de waardes kon vergelijken met PTPLOT
+ # Slaat op als csv zodat ik de waardes kon vergelijken met PTPLOT
   print(GW)
   Noise = Omega_N(frequencies, 3, 15)  # Mijn sensitivty curve
   calculate_snr_(GW, Noise, frequencies) # SNR calculation gebaseerd op mijn GW signaal en sensitivity curve

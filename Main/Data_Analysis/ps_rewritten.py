@@ -33,18 +33,23 @@ class PowerSpectrum:
         self.Tstar = Tstar
         self.vw = vw
         self.H_rstar = Beta_to_Rstar(self.betaoverH, self.vw)
+        self.cs =  1/np.sqrt(3)
         self.h = 0.678
         self.zp = 10
         self.gs = 106.75
         self.H_0 = 68.7 / 3.086e19  
-        self.cs = 1.0 / sqrt(3.0)
+        self.T_sh = 2 # Not the correct val8e because I would need Ubarf, but works as long as << 1
         self.K = KineticEnergyFraction(self.alpha, self.vw) # Changes per PS
         self.hstar = 16.5e-6 * (self.Tstar / 100) * np.power(self.gs / 100, (1 / 6))
         self.Fgw_0 = 3.57e-5*((100/self.gs))**(1/3) # Constant
         self.Amp = self.calculate_amplitude()
+        
 
     def calculate_amplitude(self): 
-        return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**2*self.H_rstar 
+        if self.H_rstar*self.T_sh > 1:
+            return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(2)*(self.H_rstar/self.cs)
+        else:
+            return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(3/2)*(self.H_rstar/np.sqrt(self.cs))**2
 
     @staticmethod  # Not dependent on the power spectrum itself, therefore static
     def C(s):
@@ -67,7 +72,6 @@ if __name__ == "__main__":
   np.savetxt('Omega_GW_test.csv', GW, delimiter=',') # Slaat op als csv zodat ik de waardes kon vergelijken met PTPLOT
   print(GW)
   Noise = Omega_N(frequencies, 3, 15)  # Mijn sensitivty curve
-  calculate_snr_(GW, Noise, frequencies) # SNR calculation gebaseerd op mijn GW signaal en sensitivity curve
   print(f"The peak frequency of the PS is: {P1.fp_0()} mHz")
   print(f"The amplitude of the PS is: {P1.calculate_amplitude()}")
 
@@ -79,6 +83,7 @@ if __name__ == "__main__":
   f = array[:, 0]
   N_ptp = array[:, 1]
   GW_ptp = array[:, 2]
+  SNR_1 = calculate_snr_(GW, N_ptp, frequencies) 
   SNR_2 = calculate_snr_(GW_ptp, N_ptp, f) # SNR calculation gebaseerd op PTPLOT data, dit komt inderdaad overeen met wat in de grafiek van PTPLOT staat
  
  

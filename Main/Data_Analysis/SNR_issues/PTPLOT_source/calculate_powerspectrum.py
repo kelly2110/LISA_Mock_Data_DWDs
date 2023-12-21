@@ -96,7 +96,7 @@ def get_SNR_value(fSens, omSens, duration,
         Signal-to-noise ratio
     """
 
-    ps = PowerSpectrum(Tstar=Tstar, gstar=gstar,
+"""     ps = PowerSpectrum(Tstar=Tstar, gstar=gstar,
                        vw=vw, alpha=alpha, BetaoverH=BetaoverH)
 
     snr, frange = StockBkg_ComputeSNR(fSens,
@@ -107,7 +107,7 @@ def get_SNR_value(fSens, omSens, duration,
                                       1.e-6,
                                       1)
 
-    return snr
+    return snr """
     
 class PowerSpectrum:
     """A class used to define the power spectrum
@@ -143,7 +143,7 @@ class PowerSpectrum:
     def __init__(self,
                  BetaoverH = None,
                  Tstar = 180.0,
-                 gstar = 100,
+                 gstar = 106.75,
                  vw = None,
                  adiabaticRatio = 4.0/3.0,
                  zp = 10,
