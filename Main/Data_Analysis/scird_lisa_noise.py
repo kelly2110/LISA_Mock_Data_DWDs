@@ -23,13 +23,14 @@ def Omega_S(f): #In reality this is h^2*Omega_S
     return ((2*pi**2)/(3*H_0**2))*(f**3)*S_h(f)
 
 if__name__ = '__main__'
-f = np.logspace(-6, 1, 8000)
+f = np.logspace(-6, 1, 2000)
 noise = np.sqrt(S_h(f))
 print(noise)
 
 Omega = Omega_S(f)
+np.savetxt("scird_)
 print(Omega)
-plt.loglog(f, noise)
+plt.loglog(f, Omega)
 plt.title('LISA Noise Signal')
 plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
 plt.ylabel(r'$\sqrt{S_{h}(f)}$' + "  " +r'$(1/\sqrt{Hz})$')

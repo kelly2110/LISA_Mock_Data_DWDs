@@ -71,7 +71,7 @@ if __name__ == "__main__":
   GW = (P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())) # Dit is mijn GW signaal
   np.savetxt('Omega_GW_test.csv', GW, delimiter=',') # Slaat op als csv zodat ik de waardes kon vergelijken met PTPLOT
   print(GW)
-  Noise = Omega_N(frequencies, 3, 15)  # Mijn sensitivty curve
+  Noise = Omega_N(frequencies, 3, 15)  # Mijn sensitivity curve
   print(f"The peak frequency of the PS is: {P1.fp_0()} mHz")
   print(f"The amplitude of the PS is: {P1.calculate_amplitude()}")
 
