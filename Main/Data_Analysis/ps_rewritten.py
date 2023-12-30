@@ -16,7 +16,7 @@ f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high)) """
 frequencies = np.logspace(-6, 1, 2000)
-H_0 = (100 * 0.687) / 3.09e19  # Hubble Constant
+H_0 = (100 * 1) / 3.09e19  # Hubble Constant
 
 # Conversions of Bubble radius to beta and vice versa
 def Rstar_to_Beta(rstar, vw):

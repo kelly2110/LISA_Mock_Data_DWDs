@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from math import pi
 
 # Constants
-h = 0.678
+h = 1
 H_0 = (100 * h)/(3.09e19) #km sec^-1 Mpc^-1 --> 1/s --> Hz
 c = 3.0e8 #m/s
 L = 2.5e9 #m
