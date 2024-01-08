@@ -149,7 +149,7 @@ class PowerSpectrum:
                  zp = 10,
                  alpha = None,
                  kturb = 1.97/65.0,
-                 H_rstar = None,
+                 H_rstar = None,  
                  ubarf_in = None):
         """
         Parameters
@@ -279,59 +279,63 @@ class PowerSpectrum:
         return h_planck*h_planck*3.0 \
             *0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
             *self.adiabaticRatio*self.adiabaticRatio \
-            *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)    
+            *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)   
+
+PS = PowerSpectrum(50, 180, 106.75, 0.8, 4/3, 10, 0.4, 1.97/65, None, None)
+print(f"The peak frequency of the PS is: {PS.fsw()} mHz")
+
 
     # The following three functions (*turb) are taken from 1512.06239.
     # However, in later papers the contribution from turbulence is neglected,
     # as further studies to understand turbulence are needed. As such, these
     # three functions are not called anywhere in the code by default.
     # However, these can still be turned on by overriding the sw_only flag.
-    def fturb(self):
-        """Calculate peak frequency for turbulence
+    # def fturb(self):
+    #     """Calculate peak frequency for turbulence
 
-        This function follows equation 18 equation of 1512.06239.
-        """
+    #     This function follows equation 18 equation of 1512.06239.
+    #     """
 
-        return (27e-6)*(1.0/self.vw)*(self.BetaoverH)*(self.Tstar/100.0) \
-            *np.power(self.gstar/100,1.0/6.0)
+    #     return (27e-6)*(1.0/self.vw)*(self.BetaoverH)*(self.Tstar/100.0) \
+    #         *np.power(self.gstar/100,1.0/6.0)
 
-    def Sturb(self, f, fp):
-        """Calculate the spectral shape from turbulence
+    # def Sturb(self, f, fp):
+    #     """Calculate the spectral shape from turbulence
 
-        This function follows equation 17 equation of 1512.06239.
-        """
+    #     This function follows equation 17 equation of 1512.06239.
+    #     """
 
-        return np.power(fp,3.0)/(np.power(1 + fp, 11.0/3.0) \
-                                 *(1 + 8*math.pi*f/self.hstar))
+    #     return np.power(fp,3.0)/(np.power(1 + fp, 11.0/3.0) \
+    #                              *(1 + 8*math.pi*f/self.hstar))
 
-    def power_spectrum_turb(self, f):
-        """Calculate power spectrum from turbulence for a given frequency f
+    # def power_spectrum_turb(self, f):
+    #     """Calculate power spectrum from turbulence for a given frequency f
 
-        This function follows equation 16 equation of 1512.06239.
-        """
+    #     This function follows equation 16 equation of 1512.06239.
+    #     """
 
-        fp = f/self.fturb()
-        return (3.35e-4)/self.BetaoverH \
-            *np.power(self.kturb*self.alpha/(1 + self.alpha),3.0/2.0) \
-            *np.power(100/self.gstar,1.0/3.0)*self.vw*self.Sturb(f,fp)
+    #     fp = f/self.fturb()
+    #     return (3.35e-4)/self.BetaoverH \
+    #         *np.power(self.kturb*self.alpha/(1 + self.alpha),3.0/2.0) \
+    #         *np.power(100/self.gstar,1.0/3.0)*self.vw*self.Sturb(f,fp)
 
-    def power_spectrum_sw_conservative(self, f):
-        """Calculate power spectrum from sound waves (conservative)
+    # def power_spectrum_sw_conservative(self, f):
+    #     """Calculate power spectrum from sound waves (conservative)
 
-        For the conservative estimate, take the shock time no larger than 1.
-        """
+    #     For the conservative estimate, take the shock time no larger than 1.
+    #     """
 
-        return min(self.H_tsh,1.0)*self.power_spectrum_sw(f)
+    #     return min(self.H_tsh,1.0)*self.power_spectrum_sw(f)
     
-    def power_spectrum(self, f):
-        """Calculate total power spectrum from sound waves and turbulence
-        """
+    # def power_spectrum(self, f):
+    #     """Calculate total power spectrum from sound waves and turbulence
+    #     """
 
-        return self.power_spectrum_sw(f) + self.power_spectrum_turb(f)
+    #     return self.power_spectrum_sw(f) + self.power_spectrum_turb(f)
 
-    def power_spectrum_conservative(self, f):
-        """Calculate total power spectrum from sound waves (conservative) and turbulence
-        """
+    # def power_spectrum_conservative(self, f):
+    #     """Calculate total power spectrum from sound waves (conservative) and turbulence
+    #     """
 
-        return self.power_spectrum_sw_conservative(f) + self.power_spectrum_turb(f)
+    #     return self.power_spectrum_sw_conservative(f) + self.power_spectrum_turb(f)
     

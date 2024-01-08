@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from math import pi
 
 # Constants
-h = 1
-H_0 = (100 * h)/(3.09e19) #km sec^-1 Mpc^-1 --> 1/s --> Hz
-c = 3.0e8 #m/s
+h = 0.678
+H_0 = (100 * 1)/(3.09e19) #km sec^-1 Mpc^-1 --> 1/s --> Hz
+c = 2.9979e8 #m/s
 L = 2.5e9 #m
 f_s = c/(2*pi*L)
 # Noise Parameters, P = 15, A = 3
@@ -24,7 +24,7 @@ def P_acc(f,A):
     return (A**2)*((10**-15)**2)*(1 + ((0.0004/f)**2))*(1 + (f/0.008)**4)*(1/(4*pi*pi*f*f*c*c))
 
 def Omega_N(f, A, P):
-    return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n(f, A, P)
+    return ((h*h*4*(pi**2))/(3*H_0**2))*(f*f*f)*S_n(f, A, P)
 
 if __name__ == "__main__":
     f_low = np.arange(0.00003, 0.001, 0.000001)
