@@ -8,7 +8,7 @@ from kinetic_energy_fraction import KineticEnergyFraction #Jorinde's K calculati
 from giese_lisa_sens import Omega_N # Dit is de Sensitivity curve uit jouw paper, die ik overal gebruik @Jorinde
 import time
 import pandas as pd
-from SNR_calc import calculate_snr_ # Mijn SNR functie staat hierin!
+from SNR_calculation import calculate_snr_ # Mijn SNR functie staat hierin!
 
 # Frequency range
 """ f_low = np.arange(0.00003, 0.001, 0.000001)
@@ -38,15 +38,15 @@ class PowerSpectrum:
         self.zp = 10
         self.gs = 106.75
         self.H_0 = 100 / 3.09e19  
-        self.T_sh = 2 # Not the correct value because I would need Ubarf, but works as long as << 1
         self.K = KineticEnergyFraction(self.alpha, self.vw) # Changes per PS
+        self.T_sh = self.H_rstar/self.K # CHECK THIS DEFINITION
         self.hstar = 16.5e-6 * (self.Tstar / 100) * np.power(self.gs / 100, (1 / 6))
         self.Fgw_0 = 3.57e-5*((100/self.gs))**(1/3) # Constant
         self.Amp = self.calculate_amplitude()
         
 
     def calculate_amplitude(self): 
-        if self.H_rstar*self.T_sh < 1:
+        if self.H_rstar*self.T_sh > 1:
             return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(2)*(self.H_rstar/self.cs)
         else:
             return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(3/2)*(self.H_rstar/np.sqrt(self.cs))**2
@@ -64,10 +64,10 @@ class PowerSpectrum:
 
 
 if __name__ == "__main__":
-
-  # Object Creation
+# Define the range of alpha values and increment
+    """ # Object Creation
   start_time = time.time()
-  P1 = PowerSpectrum(0.001, 50, 180, 0.8)
+  P1 = PowerSpectrum(0.05, 50, 180, 0.8)
   GW = (P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())) # Dit is mijn GW signaal
   np.savetxt('Omega_GW_test.csv', GW, delimiter=',') # Slaat op als csv zodat ik de waardes kon vergelijken met PTPLOT
   print(GW)
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
 # @Jorinde dit is de csv file van PTPLOT met dezelfde parameters, ik lees hem nu in via pandas
   columns = ['f', ' omegaSens', ' omegaSW']
-  data = pd.read_csv("alpha0_001.csv", usecols=columns)
+  data = pd.read_csv("alpha0_05.csv", usecols=columns)
   array = data.to_numpy()
   f = array[:, 0]
   N_ptp = array[:, 1]
@@ -106,4 +106,4 @@ if __name__ == "__main__":
   plt.ylabel(r'$\Omega$')
   plt.title('Power Spectrum')
   plt.legend()
-  plt.show()
+  plt.show() """

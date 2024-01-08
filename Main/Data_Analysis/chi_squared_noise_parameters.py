@@ -5,8 +5,7 @@ import numpy as np
 from scipy.optimize import minimize # Used to minimize for the parameters
 from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
-from data_gen_noise import calculate_N
-from combined_data_gen import make_data
+from combined_data_gen import make_data_no_DWD
 import time
 
 # Define the chi-squared function 
@@ -28,10 +27,10 @@ f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high))
 N_c = 50
-Omega_Noise = calculate_N(frequencies, N_c, 3,15)
+Omega_Noise = Omega_N(frequencies, 3,15)
 P1 = PowerSpectrum(0.6, 50, 180, 0.8)
 GW_model = P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())
-DATA = make_data(frequencies, N_c, 3, 15, P1)
+DATA = make_data_no_DWD(frequencies, N_c, P1)
 mean_sample_data = np.mean(DATA, axis=1)
 standard_deviation = np.std(DATA, axis=1)
 

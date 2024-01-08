@@ -6,7 +6,7 @@ from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
 from noise import lisa_noise_1, lisa_noise_2
-from SNR_calc import calculate_snr_
+from SNR_calculation import calculate_snr_
 import time
 
 # Defining the chi-squared function
@@ -32,7 +32,7 @@ frequencies = np.concatenate((f_low, f_middle, f_high))
 N_c = 94
 
 # Generating the mock data, taking the mean and the standard deviation
-powerspectrum = PowerSpectrum(0.6, 50, 180, 0.8)
+powerspectrum = PowerSpectrum(0.3, 50, 180, 0.8)
 
 DATA = make_data_no_DWD(frequencies, N_c, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?

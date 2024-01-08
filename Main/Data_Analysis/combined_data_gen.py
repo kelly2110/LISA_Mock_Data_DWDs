@@ -96,7 +96,7 @@ def make_data_DWD_2(frequencies, N_c, PS):
     # Calculate noise and signal arrays and adding them together to form the data
     Total_Noise = calculate_N()
     Total_Signal = calculate_S()
-    Total_Data = np.mean((Total_Noise + Total_Signal), axis=1)
+    Total_Data = (Total_Noise + Total_Signal)
     return Total_Data
 
 if __name__ == "__main__":
@@ -111,14 +111,18 @@ if __name__ == "__main__":
     DATA2 = make_data_DWD_1(frequencies, 94, PS)
     DATA3 = make_data_DWD_2(frequencies, 94, PS)
     Sensitivity = Omega_N(frequencies, 3, 15)
+
+    # Timing code
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"RunTime: {elapsed_time} seconds")
+
+
     plt.loglog(frequencies, Sensitivity, label='LISA Sensitvity')
     plt.loglog(frequencies, GW_model, label='GW Signal')
-    plt.loglog(frequencies, DATA1, label='LISA Noise')
-    plt.loglog(frequencies, DATA2, label='DWD Noise 1')
-    plt.loglog(frequencies, DATA3, label='DWD Noise 2')
+    plt.loglog(frequencies, np.mean(DATA1, axis=1), label='LISA Noise')
+    plt.loglog(frequencies, np.mean(DATA2, axis=1), label='DWD Noise 1')
+    plt.loglog(frequencies, np.mean(DATA3, axis=1), label='DWD Noise 2')
     plt.title(r'$LISA$' + " " + r'$\Omega$' + " " + '$Mock Data Generation$')
     plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
     plt.ylabel(r'$h^{2}\Omega(f)$')
