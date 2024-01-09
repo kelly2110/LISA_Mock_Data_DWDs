@@ -1,4 +1,4 @@
-# Based on Giese et al, 2021.
+"""Fit for the LISA Noise/Sensitivity curve, based on Giese et al, 2021."""
 
 import numpy as np
 import matplotlib.pyplot as plt

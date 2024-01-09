@@ -1,4 +1,5 @@
-'''Based on LISA Science Requirements Document, this fit does not contain parameters A and P explicitly'''
+""" Sensitity curve of LISA, based on LISA Science Requirements Document.
+This fit does not contain parameters A and P explicitly"""
 import math
 from math import pi
 import numpy as np
@@ -28,13 +29,5 @@ noise = np.sqrt(S_h(f))
 print(noise)
 
 Omega = Omega_S(f)
-np.savetxt("scird_)
-print(Omega)
-plt.loglog(f, Omega)
-plt.title('LISA Noise Signal')
-plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
-plt.ylabel(r'$\sqrt{S_{h}(f)}$' + "  " +r'$(1/\sqrt{Hz})$')
-plt.grid = 'True'
-plt.savefig('Lisa Noise Signal')
-plt.show()
+
 

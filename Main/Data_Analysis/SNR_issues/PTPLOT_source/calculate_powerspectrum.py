@@ -16,6 +16,7 @@ And the following class:
 
 
 import numpy as np
+import pandas as pd
 import math
 
 try:
@@ -280,9 +281,35 @@ class PowerSpectrum:
             *0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
             *self.adiabaticRatio*self.adiabaticRatio \
             *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)   
+    
 
-PS = PowerSpectrum(50, 180, 106.75, 0.8, 4/3, 10, 0.4, 1.97/65, None, None)
-print(f"The peak frequency of the PS is: {PS.fsw()} mHz")
+
+
+
+frequencies = np.logspace(-6, 1, 2000)
+PS = PowerSpectrum(50, 180, 106.75, 0.8, 1, 10, 0.05, 1.97/65, None, None)
+GW = PowerSpectrum.power_spectrum_sw(PS, frequencies)
+np.savetxt('Omega_PTPlot_code.csv', GW, delimiter=',')
+print(f"The spectral index of the PS is: {PS.Csw(frequencies/PS.fsw())}")
+print (f"the peak frequency of the PS is: {PS.fsw()} mHz")
+print(f"The value of H_r_star is: {PS.H_rstar}")
+print(f"The spectral index of the PS is: {PS.Csw(frequencies/PS.fsw())}")
+print(f"The value of Ubarf is: {PS.ubarf}")
+
+
+columns = ['f', ' omegaSens', ' omegaSW']
+data = pd.read_csv("alpha0_05.csv", usecols=columns)
+array = data.to_numpy()
+f = array[:, 0]
+N_ptp = array[:, 1]
+GW_ptp = array[:, 2]
+# SNR calculation gebaseerd op PTPLOT data, dit komt inderdaad overeen met wat in de grafiek van PTPLOT staat
+ 
+ 
+
+
+ # @Jorinde hier staat de ratio tussen mijn signaal en het PTPLOT signaal, voor zowel GW als Sensitivity
+print("Ratio GW signal:", 1/(GW_ptp[0:10]/GW[0:10]))
 
 
     # The following three functions (*turb) are taken from 1512.06239.

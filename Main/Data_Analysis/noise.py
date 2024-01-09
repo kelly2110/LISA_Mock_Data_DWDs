@@ -1,3 +1,4 @@
+""" Models for the noise curves of Boileau et al. and Robson & Cornish"""
 import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt

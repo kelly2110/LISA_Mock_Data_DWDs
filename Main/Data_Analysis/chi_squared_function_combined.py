@@ -59,19 +59,6 @@ if result.success:
 else:
     print("Optimization did not converge.")
 
-# AIC calculation, adjust k as necessary
-def calculate_aic(chi):
-    k = 4
-    AIC = chi + 2*k
-    print("The AIC value is:", AIC)
-    return AIC
-
-calculate_aic(Chi_Squared_bf)
-
-# Timing code snippet
-end_time = time.time()
-run_time = end_time - start_time
-print(f"The run time is {run_time} seconds")
 
 # Reconstructing the signal with optimized parameters
 optimized_signal = powerspectrum.Omega_GW(frequencies, optimized_Amp, optimized_f_p0)

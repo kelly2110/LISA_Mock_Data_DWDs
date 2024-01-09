@@ -1,3 +1,4 @@
+""" Calculation of the Kinetic Energy Fraction for the FOPT GW signal"""
 import numpy as np
 from scipy.integrate import odeint
 from scipy.integrate import simps

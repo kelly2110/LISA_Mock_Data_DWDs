@@ -32,9 +32,9 @@ frequencies = np.concatenate((f_low, f_middle, f_high))
 N_c = 94
 
 # Generating the mock data, taking the mean and the standard deviation
-powerspectrum = PowerSpectrum(0.3, 50, 180, 0.8)
+powerspectrum = PowerSpectrum(0.6, 50, 180, 0.8)
 
-DATA = make_data_no_DWD(frequencies, N_c, powerspectrum)
+DATA = make_data_DWD_1(frequencies, N_c, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?
 standard_deviation = np.std(DATA, axis=1)
 
@@ -64,21 +64,8 @@ if result.success:
 else:
     print("Optimization did not converge.")
 
-# AIC calculation, adjust k as necessary
-def calculate_aic(chi):
-    k = 8
-    AIC = chi + 2*k
-    print("The AIC value is:", AIC)
-    return AIC
 
-calculate_aic(Chi_Squared_bf)
-
-# Timing code snippet
-end_time = time.time()
-run_time = end_time - start_time
-print(f"The run time is {run_time} seconds")
-
-# Reconstructing the signal with optimized parameters
+""" # Reconstructing the signal with optimized parameters
 optimized_signal = powerspectrum.Omega_GW(frequencies, optimized_Amp, optimized_f_p0)
 
 # Original signal
@@ -103,3 +90,4 @@ plt.title(r'Original and reconstructed gravitational wave signal')
 plt.savefig('Original and reconstructed gravitational wave signal') 
 plt.legend()
 plt.show()
+ """

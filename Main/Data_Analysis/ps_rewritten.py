@@ -1,5 +1,6 @@
-# Based upon the equations given in "Detecting gravitational waves from a cosmological first-order phase transition with LISA: an update', Caprini et al., 2020.
-# and "Shape of the acoustic gravitational wave power spectrum from a first order phase transition", Hindmarsh et al., 2020.
+""" Calculation of the powerspectrum for the FOPT GW signal (Model) 
+Based upon the equations given in "Detecting gravitational waves from a cosmological first-order phase transition with LISA: an update', Caprini et al., 2020.
+and "Shape of the acoustic gravitational wave power spectrum from a first order phase transition", Hindmarsh et al., 2020."""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,23 +41,23 @@ class PowerSpectrum:
         self.H_0 = 100 / 3.09e19  
         self.K = KineticEnergyFraction(self.alpha, self.vw) # Changes per PS
         self.T_sh = self.H_rstar/self.K # CHECK THIS DEFINITION
-        self.hstar = 16.5e-6 * (self.Tstar / 100) * np.power(self.gs / 100, (1 / 6))
-        self.Fgw_0 = 3.57e-5*((100/self.gs))**(1/3) # Constant
+        self.hstar = 16.5e-6*(self.Tstar/100)*(self.gs/106.75)**(1/6)
+        self.Fgw_0 = 3.57e-5*((106.75/self.gs))**(1/3) # Constant
         self.Amp = self.calculate_amplitude()
         
 
     def calculate_amplitude(self): 
         if self.H_rstar*self.T_sh > 1:
-            return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(2)*(self.H_rstar/self.cs)
+            return (9/16)*self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(2)*(self.H_rstar/self.cs)
         else:
-            return self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(3/2)*(self.H_rstar/np.sqrt(self.cs))**2
+            return (9/16)*self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(3/2)*(self.H_rstar/np.sqrt(self.cs))**2
 
     @staticmethod  # Not dependent on the power spectrum itself, therefore static
     def C(s):
         return (s**3)*((7/(4+3*(s**2)) )**(7/2))
     
     def fp_0(self):
-        return ((26.0e-6)*(1.0/self.H_rstar)*(self.zp/10.0)*(self.Tstar/100)*(self.gs/100)**(1.0/6.0))
+        return ((26.0e-6)*(1.0/self.H_rstar)*(self.zp/10.0)*(self.Tstar/100)*(self.gs/106.75)**(1.0/6.0))
   
     # Returns h^2 Omega_GW
     def Omega_GW(self, frequencies, Amp, f_peak):
@@ -65,7 +66,7 @@ class PowerSpectrum:
 
 if __name__ == "__main__":
 # Define the range of alpha values and increment
-    """ # Object Creation
+     # Object Creation
   start_time = time.time()
   P1 = PowerSpectrum(0.05, 50, 180, 0.8)
   GW = (P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())) # Dit is mijn GW signaal
@@ -74,7 +75,10 @@ if __name__ == "__main__":
   Noise = Omega_N(frequencies, 3, 15)  # Mijn sensitivity curve
   print(f"The peak frequency of the PS is: {P1.fp_0()} mHz")
   print(f"The amplitude of the PS is: {P1.calculate_amplitude()}")
-
+  print(f"The value of fgw is: {P1.Fgw_0}")
+  print(f"The value of H_r_star is: {P1.H_rstar}")
+  print(f"The spectral index of the PS is: {P1.C(frequencies/P1.fp_0())}")
+  print(f"The value of K is: {P1.K}")
 
 # @Jorinde dit is de csv file van PTPLOT met dezelfde parameters, ik lees hem nu in via pandas
   columns = ['f', ' omegaSens', ' omegaSW']
@@ -95,7 +99,10 @@ if __name__ == "__main__":
 
  # @Jorinde hier staat de ratio tussen mijn signaal en het PTPLOT signaal, voor zowel GW als Sensitivity
   print("Ratio GW signal:", 1/(GW_ptp[0:1]/GW[0:1]))
+  print("Ratio GW signal:", 1/(GW[0:1]/GW_ptp[0:1]))
   print("Ratio Noise signal:", 1/(N_ptp[0:1]/Noise[0:1]))
+  print("Ratio Noise signal:", 1/(Noise[0:1]/N_ptp[0:1]))
+  
  
 # PS plot
   plt.loglog(frequencies, GW, color = 'g', label='GW signal')
@@ -106,4 +113,4 @@ if __name__ == "__main__":
   plt.ylabel(r'$\Omega$')
   plt.title('Power Spectrum')
   plt.legend()
-  plt.show() """
+  plt.show()

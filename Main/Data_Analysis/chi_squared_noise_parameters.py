@@ -9,7 +9,7 @@ from combined_data_gen import make_data_no_DWD
 import time
 
 # Define the chi-squared function 
-def chi_squared(params, frequencies, mean_sample_data, GW_model, standard_deviation):
+def chi_squared_case_0_noise(params, frequencies, mean_sample_data, GW_model, standard_deviation):
     chi_2_value = []
     A, P = params
     noise_model = Omega_N(frequencies, A, P)    
@@ -26,7 +26,7 @@ f_low = np.arange(0.00003, 0.001, 0.000001)
 f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high))
-N_c = 50
+N_c = 200
 Omega_Noise = Omega_N(frequencies, 3,15)
 P1 = PowerSpectrum(0.6, 50, 180, 0.8)
 GW_model = P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())
@@ -38,7 +38,7 @@ standard_deviation = np.std(DATA, axis=1)
 initial_params = [3, 15] 
 
 # Minimize the chi-squared function
-result = minimize(chi_squared, initial_params, args=(frequencies, mean_sample_data, GW_model, standard_deviation), method='Powell')
+result = minimize(chi_squared_case_0_noise, initial_params, args=(frequencies, mean_sample_data, GW_model, standard_deviation), method='Powell')
 Chi_Squared_bf = result.fun
 print(f"Best fit Chi Squared value:", Chi_Squared_bf)
 
@@ -52,12 +52,3 @@ if result.success:
 else:
     print("Optimization did not converge.")
 
-
-# Calculating AIC
-def calculate_aic(chi):
-    k = 2
-    AIC = chi + 2*k
-    print("The AIC value is:", AIC)
-    return AIC
-
-AIC = calculate_aic(Chi_Squared_bf)
