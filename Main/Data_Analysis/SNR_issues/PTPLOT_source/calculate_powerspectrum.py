@@ -16,9 +16,9 @@ And the following class:
 
 
 import numpy as np
-import pandas as pd
 import math
-
+import pandas as pd
+import matplotlib.pyplot as plt
 try:
     from .espinosa import ubarf
     from .snr import *
@@ -65,8 +65,8 @@ def beta_to_rstar(beta, vw):
 
     return math.pow(8.0*math.pi,1.0/3.0)*vw/beta
 
-def get_SNR_value(fSens, omSens, duration,
-                  Tstar=180.0, gstar=100, vw=0.9, alpha=0.1, BetaoverH=10):
+# def get_SNR_value(fSens, omSens, duration,
+#                   Tstar=180.0, gstar=100, vw=0.9, alpha=0.1, BetaoverH=10):
     """Calculate the SNR value for a given power spectrum
 
     Note that this function is currently not being used by the code, but it
@@ -97,10 +97,10 @@ def get_SNR_value(fSens, omSens, duration,
         Signal-to-noise ratio
     """
 
-"""     ps = PowerSpectrum(Tstar=Tstar, gstar=gstar,
+    ps = PowerSpectrum(Tstar=Tstar, gstar=gstar,
                        vw=vw, alpha=alpha, BetaoverH=BetaoverH)
 
-    snr, frange = StockBkg_ComputeSNR(fSens,
+"""     snr, frange = StockBkg_ComputeSNR(fSens,
                                       omSens,
                                       fSens,
                                       ps.power_spectrum_sw_conservative(fSens),
@@ -143,14 +143,14 @@ class PowerSpectrum:
 
     def __init__(self,
                  BetaoverH = None,
-                 Tstar = 180.0,
-                 gstar = 106.75,
+                 Tstar = 100.0,
+                 gstar = 100.0,
                  vw = None,
                  adiabaticRatio = 4.0/3.0,
                  zp = 10,
                  alpha = None,
                  kturb = 1.97/65.0,
-                 H_rstar = None,  
+                 H_rstar = None,
                  ubarf_in = None):
         """
         Parameters
@@ -280,37 +280,14 @@ class PowerSpectrum:
         return h_planck*h_planck*3.0 \
             *0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
             *self.adiabaticRatio*self.adiabaticRatio \
-            *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)   
+            *np.power(self.ubarf,4.0)*self.H_rstar*self.Csw(fp)
     
-
-
-
-
-frequencies = np.logspace(-6, 1, 2000)
-PS = PowerSpectrum(50, 180, 106.75, 0.8, 1, 10, 0.05, 1.97/65, None, None)
-GW = PowerSpectrum.power_spectrum_sw(PS, frequencies)
-np.savetxt('Omega_PTPlot_code.csv', GW, delimiter=',')
-print(f"The spectral index of the PS is: {PS.Csw(frequencies/PS.fsw())}")
-print (f"the peak frequency of the PS is: {PS.fsw()} mHz")
-print(f"The value of H_r_star is: {PS.H_rstar}")
-print(f"The spectral index of the PS is: {PS.Csw(frequencies/PS.fsw())}")
-print(f"The value of Ubarf is: {PS.ubarf}")
-
-
-columns = ['f', ' omegaSens', ' omegaSW']
-data = pd.read_csv("alpha0_05.csv", usecols=columns)
-array = data.to_numpy()
-f = array[:, 0]
-N_ptp = array[:, 1]
-GW_ptp = array[:, 2]
-# SNR calculation gebaseerd op PTPLOT data, dit komt inderdaad overeen met wat in de grafiek van PTPLOT staat
- 
- 
-
-
- # @Jorinde hier staat de ratio tussen mijn signaal en het PTPLOT signaal, voor zowel GW als Sensitivity
-print("Ratio GW signal:", 1/(GW_ptp[0:10]/GW[0:10]))
-
+   
+    def ampl(self):
+        return 0.687*3.57e-5*0.012*np.power(100.0/self.gstar,1.0/3.0) \
+            *self.adiabaticRatio*self.adiabaticRatio \
+            *np.power(self.ubarf,4.0)*self.H_rstar
+    
 
     # The following three functions (*turb) are taken from 1512.06239.
     # However, in later papers the contribution from turbulence is neglected,
@@ -346,13 +323,13 @@ print("Ratio GW signal:", 1/(GW_ptp[0:10]/GW[0:10]))
     #         *np.power(self.kturb*self.alpha/(1 + self.alpha),3.0/2.0) \
     #         *np.power(100/self.gstar,1.0/3.0)*self.vw*self.Sturb(f,fp)
 
-    # def power_spectrum_sw_conservative(self, f):
-    #     """Calculate power spectrum from sound waves (conservative)
+    def power_spectrum_sw_conservative(self, f):
+        """Calculate power spectrum from sound waves (conservative)
 
-    #     For the conservative estimate, take the shock time no larger than 1.
-    #     """
+        For the conservative estimate, take the shock time no larger than 1.
+        """
 
-    #     return min(self.H_tsh,1.0)*self.power_spectrum_sw(f)
+        return min(self.H_tsh,1.0)*self.power_spectrum_sw(f)
     
     # def power_spectrum(self, f):
     #     """Calculate total power spectrum from sound waves and turbulence
@@ -365,4 +342,37 @@ print("Ratio GW signal:", 1/(GW_ptp[0:10]/GW[0:10]))
     #     """
 
     #     return self.power_spectrum_sw_conservative(f) + self.power_spectrum_turb(f)
-    
+
+frequencies = np.logspace(-6, 1, 2000)
+PS = PowerSpectrum(BetaoverH=100, Tstar=100, gstar=106.75, vw=0.7, adiabaticRatio=4/3, zp=10, alpha=0.0002, kturb=1.97/65, H_rstar=None, ubarf_in=None)
+GW = PowerSpectrum.power_spectrum_sw_conservative(PS, frequencies)
+print(f"The peak frequency of the PS is: {PS.fsw()} mHz")
+print("The PS amplitude is:", PS.power_spectrum_sw(PS.fsw()))
+print("The conservative PS amplitude is:", PS.power_spectrum_sw_conservative(PS.fsw()))
+print("The value of H_rstar is:", PS.H_rstar)
+print("The value of the shock time is:", PS.H_tsh)
+
+ratio = (PS.power_spectrum_sw(PS.fsw()))/PS.power_spectrum_sw_conservative(PS.fsw())
+ratio_inv = (PS.power_spectrum_sw_conservative(PS.fsw()))/PS.power_spectrum_sw(PS.fsw())
+print("the ratio between the original PS and the conservative PS is:", ratio)
+print("the ratio between the original PS and the conservative PS is:", ratio_inv)
+
+columns = ['f', ' omegaSens', ' omegaSW']
+data = pd.read_csv("test3.csv", usecols=columns)
+array = data.to_numpy()
+f = array[:, 0]
+N_ptp = array[:, 1]
+GW_ptp = array[:, 2]
+max_value = max(GW_ptp)
+print(f"The amplitude of the PTPLOT data is: {max_value}")
+
+
+# PS plot
+plt.loglog(frequencies, GW, color = 'g', label='GW signal')
+plt.loglog(f, N_ptp, color = 'r', label='PTPLOT Sensitivity')
+plt.loglog(f, GW_ptp, color = 'b', label= 'PTPLOT GW signal')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel(r'$\Omega$')
+plt.title('Power Spectrum')
+plt.legend()
+plt.show()

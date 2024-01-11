@@ -5,7 +5,7 @@ from scipy.optimize import minimize # Used to minimize for the parameters
 from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
-from Main.Data_Analysis.SNR_calculation import calculate_snr_
+from SNR_calculation import calculate_snr_
 import time
 
 # Defining the chi-squared function
@@ -28,17 +28,17 @@ f_low = np.arange(0.00003, 0.001, 0.000001)
 f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high))
-N_c = 50
-
+N_c = 75
 # Generating the mock data, taking the mean and the standard deviation
-powerspectrum = PowerSpectrum(0.1, 50, 180, 0.6)
+powerspectrum = PowerSpectrum(0.3, 100, 100, 0.6)
+print("The original amplitude is:", powerspectrum.calculate_amplitude())
 
 DATA = make_data_no_DWD(frequencies, N_c, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?
 standard_deviation = np.std(DATA, axis=1)
 
 # Initial parameter guess
-initial_params = [3, 15, 1e-9, 1e-3] 
+initial_params = [3, 15, powerspectrum.Amp, powerspectrum.fp_0()] 
 
 # Minimize the chi-squared function
 result = minimize(chi_squared, initial_params, args=(frequencies, powerspectrum, mean_sample_data, standard_deviation), method='Powell', tol=1e-11)

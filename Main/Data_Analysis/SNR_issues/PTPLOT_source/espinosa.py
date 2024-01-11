@@ -14,7 +14,7 @@ import math
 import scipy.optimize
 import numpy as np
 
-def ubarf(vw, alpha, adiabaticRatio = 1.0):
+def ubarf(vw, alpha, adiabaticRatio = 4.0/3.0):
     """Calculates the rms fluid velocity
 
     Parameters
@@ -83,7 +83,7 @@ def kappav(vw, alpha):
                 + (math.pow(vw-cs,3.0)/math.pow(xiJ-cs,3.0))*(kappaC-kappaB-(xiJ-cs)*deltaK)
 
 
-def ubarf_to_alpha(vw, this_ubarf, adiabaticRatio = 1.0):
+def ubarf_to_alpha(vw, this_ubarf, adiabaticRatio = 4.0/3.0):
     """Calculates alpha from ubarf
 
     For a given wall velocity and list of ubarf values, calculate

@@ -6,8 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize # Used to minimize for the parameters
 from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
-from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
+from all_chi import chi_squared_case_0_noise, chi_squared_case_0_signal
 from noise import lisa_noise_1, lisa_noise_2
 from SNR_calculation import calculate_snr_
 from AIC import calculate_aic
@@ -28,6 +28,8 @@ f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high))
 
+# Specifying the numer of data points for analysis:
+N_c = 50
 
 # Creating folders to store data in
 folder_name0 = "GW_data"
@@ -40,21 +42,32 @@ os.makedirs(folder_name0, exist_ok=True)
 
 # Create multiple powerspectrum objects, to be plugged into the chi square analysis
     # Create a new folder to save the results
-folder_name = "Mock_Data_Results"
+folder_name = "PS Objects"
 os.makedirs(folder_name, exist_ok=True)
 
-for alpha in alpha_values:
-        for vw in vw_values:
-            # Object Creation for each combination of alpha and vw
-            PS = PowerSpectrum(alpha, 50, 180, vw)
-            GW_model = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
-            DWD0 = make_data_no_DWD(frequencies, 94, PS)
-            DWD1 = make_data_DWD_1(frequencies, 94, PS)
-            DWD2 = make_data_DWD_2(frequencies, 94, PS)
-            Sensitivity = Omega_N(frequencies, 3, 15)
+# Specify the size of the array based on the length of alpha_values and vw_values
+power_spectrum_objects = np.empty((len(alpha_values), len(vw_values)), dtype=object)
+
+for i, alpha in enumerate(alpha_values):
+    for j, vw in enumerate(vw_values):
+        # Object Creation for each combination of alpha and vw
+        PS = PowerSpectrum(alpha, 50, 180, vw)
+        GW = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
+        power_spectrum_objects[i, j] = GW
+
+            # Combine frequencies and GW data
+        data = np.column_stack((frequencies, GW))
+
+"""GW_model = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
+DWD0 = make_data_no_DWD(frequencies, 94, PS)
+DWD1 = make_data_DWD_1(frequencies, 94, PS)
+DWD2 = make_data_DWD_2(frequencies, 94, PS)
+Sensitivity = Omega_N(frequencies, 3, 15)
+
+
 
  # Calculate mean and standard deviation
-            mean_std_dev_DWD0 = np.column_stack((np.mean(DWD0, axis=1), np.std(DWD0, axis=1)))
+mean_std_dev_DWD0 = np.column_stack((np.mean(DWD0, axis=1), np.std(DWD0, axis=1)))
             mean_std_dev_DWD1 = np.column_stack((np.mean(DWD1, axis=1), np.std(DWD1, axis=1)))
             mean_std_dev_DWD2 = np.column_stack((np.mean(DWD2, axis=1), np.std(DWD2, axis=1)))
 
@@ -69,8 +82,8 @@ for alpha in alpha_values:
 print("Process completed.")
 
 
-
 # calculate the three chi squared functions for all powerspectrums
+
 
 
 # Calculate AIC values for each case, noise and noise+signal
@@ -91,7 +104,7 @@ def auto_AIC(*args, **kwargs):
     # Call AIC with the result of calculate_one and the fixed parameter 'y'
     result_AIC = AIC(result_calculate_one, y=3)
 
-    return result_AIC
+    return result_AIC """
 
 
 # save results for each chi squared in a separate file/folder

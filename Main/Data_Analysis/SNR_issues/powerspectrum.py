@@ -18,7 +18,7 @@ frequencies = np.concatenate((f_low, f_middle, f_high)) """
 frequencies = np.logspace(-6, 1, 2000)
 H_0 = (100 * 0.687) / 3.09e19  # Hubble Constant
 
-# Conversions of Bubbl e radius to beta and vice versa
+# Conversions of Bubble radius to beta and vice versa
 def Rstar_to_Beta(rstar, vw):
     return (8*pi)**(1/3)*vw/rstar
 
@@ -36,7 +36,6 @@ class PowerSpectrum:
         self.h = 0.678
         self.zp = 10
         self.gs = 106.75
-        self.H_0 = 68.7 / 3.086e19  
         self.cs = 1.0 / sqrt(3.0)
         self.K = KineticEnergyFraction(self.alpha, self.vw) # Changes per PS
         self.hstar = 16.5e-6 * (self.Tstar / 100) * np.power(self.gs / 100, (1 / 6))
@@ -62,7 +61,7 @@ if __name__ == "__main__":
 
   # Object Creation
   start_time = time.time()
-  P1 = PowerSpectrum(0.4, 50, 180, 0.8)
+  P1 = PowerSpectrum(0.005, 100, 100, 0.2)
   GW = (P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())) # Dit is mijn GW signaal
  # Slaat op als csv zodat ik de waardes kon vergelijken met PTPLOT
   print(GW)
@@ -72,9 +71,9 @@ if __name__ == "__main__":
   print(f"The amplitude of the PS is: {P1.calculate_amplitude()}")
 
 
-# @Jorinde dit is de csv file van PTPLOT met dezelfde parameters, ik lees hem nu in via pandas
+""" # @Jorinde dit is de csv file van PTPLOT met dezelfde parameters, ik lees hem nu in via pandas
   columns = ['f', ' omegaSens', ' omegaSW']
-  data = pd.read_csv("ptplotdata.csv", usecols=columns)
+  data = pd.read_csv(".csv", usecols=columns)
   array = data.to_numpy()
   f = array[:, 0]
   N_ptp = array[:, 1]
@@ -101,4 +100,4 @@ if __name__ == "__main__":
   plt.ylabel(r'$\Omega$')
   plt.title('Power Spectrum')
   plt.legend()
-  plt.show()
+  plt.show() """
