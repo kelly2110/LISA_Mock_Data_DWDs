@@ -1,6 +1,5 @@
 """Encompassing the entire data structure into a single file.
 Provides the output in various folders in order to ensure easy access to data analysis"""
-
 # Necessary imports
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,8 +17,8 @@ import os
 import inspect
 
 # Specifying the range of PT parameters to create the powerspectrum
-alpha_values = np.arange(0.1, 0.9, 0.1)
-vw_values = np.arange(0.1, 1.0, 0.1)
+alpha_values = np.arange(0.1, 0.3, 0.1)
+vw_values = np.arange(0.5, 0.7, 0.1)
 beta_over_h_values = np.arange(50, 150, 10)
 
 # Specifying the frequency range to be used
@@ -27,90 +26,49 @@ f_low = np.arange(0.00003, 0.001, 0.000001)
 f_middle = np.arange(0.001, 0.01, 0.00005)
 f_high = np.arange(0.01, 0.5, 0.001)
 frequencies = np.concatenate((f_low, f_middle, f_high))
-
-# Specifying the numer of data points for analysis:
-N_c = 50
+N_c = 50 # Number of data points used for analysis
 
 # Creating folders to store data in
-folder_name0 = "GW_data"
-folder_name1 = "mean_values"
-folder_name2 = "std_dev_values"
-folder_name3 = "chi_squared_outcomes"
-folder_name4 = "AIC_outcomes"
-
+folder_name0 = "PS_0bjects"
 os.makedirs(folder_name0, exist_ok=True)
 
-# Create multiple powerspectrum objects, to be plugged into the chi square analysis
-    # Create a new folder to save the results
-folder_name = "PS Objects"
-os.makedirs(folder_name, exist_ok=True)
+# Create multiple powerspectrum objects
+power_spectrum_objects = np.empty((len(alpha_values), len(vw_values)), dtype=object) # Specifying the size of the array
 
-# Specify the size of the array based on the length of alpha_values and vw_values
-power_spectrum_objects = np.empty((len(alpha_values), len(vw_values)), dtype=object)
-
+# Object Creation for each combination of alpha and vw
 for i, alpha in enumerate(alpha_values):
     for j, vw in enumerate(vw_values):
-        # Object Creation for each combination of alpha and vw
         PS = PowerSpectrum(alpha, 50, 180, vw)
         GW = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
         power_spectrum_objects[i, j] = GW
-
-            # Combine frequencies and GW data
         data = np.column_stack((frequencies, GW))
 
-"""GW_model = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
-DWD0 = make_data_no_DWD(frequencies, 94, PS)
-DWD1 = make_data_DWD_1(frequencies, 94, PS)
-DWD2 = make_data_DWD_2(frequencies, 94, PS)
-Sensitivity = Omega_N(frequencies, 3, 15)
+# Loop over power_spectrum_objects
+for i, alpha in enumerate(alpha_values):
+    for j, vw in enumerate(vw_values):
+        power_spectrum_object = power_spectrum_objects[i, j]
 
+        # Creating the mock data that goes into the chi squared
+        DWD0 = make_data_no_DWD(frequencies, N_c, power_spectrum_object)
+        mean = np.mean(DWD0, axis=1)
+        std_dev = np.std(DWD0, axis=1)
 
+        # Calculating the chi squared
+                # Define initial parameters for optimization
+        initial_params = [3, 15]
 
- # Calculate mean and standard deviation
-mean_std_dev_DWD0 = np.column_stack((np.mean(DWD0, axis=1), np.std(DWD0, axis=1)))
-            mean_std_dev_DWD1 = np.column_stack((np.mean(DWD1, axis=1), np.std(DWD1, axis=1)))
-            mean_std_dev_DWD2 = np.column_stack((np.mean(DWD2, axis=1), np.std(DWD2, axis=1)))
+        # Define the chi-squared function with only optimization parameters
+        chi = lambda params: chi_squared_case_0_noise(params, frequencies, N_c, mean, std_dev)
+        # Minimize the chi-squared function
+        result = minimize(chi, initial_params, args=(frequencies, mean, std_dev), method='Powell')
+        A_opt, P_opt = result.x
+        Chi_Squared_bf = result.fun
+        A_opt, P_opt = result.x
+        Chi_Squared_bf = result.fun
 
-            # Save means and standard deviations of the generated mock data
-            file_name_prefix = f'MockData_alpha_{alpha}_vw_{vw}'
-            np.savetxt(os.path.join(folder_name, f'{file_name_prefix}_Mean_Std_DATA1.csv'), mean_std_dev_DWD0, delimiter=',', header='Mean, Std', comments='')
-            np.savetxt(os.path.join(folder_name, f'{file_name_prefix}_Mean_Std_DATA2.csv'), mean_std_dev_DWD1, delimiter=',', header='Mean, Std', comments='')
-            np.savetxt(os.path.join(folder_name, f'{file_name_prefix}_Mean_Std_DATA3.csv'), mean_std_dev_DWD2, delimiter=',', header='Mean, Std', comments='')
+        # Print the results
+        print(f"For alpha={alpha}, vw={vw}, Best fit A={A_opt}, Best fit P={P_opt}, Best fit Chi Squared value:", Chi_Squared_bf)
 
-            print(f"Mock data for alpha = {alpha}, vw = {vw} saved.")
-
-print("Process completed.")
-
-
-# calculate the three chi squared functions for all powerspectrums
-
-
-
-# Calculate AIC values for each case, noise and noise+signal
-def auto_AIC(*args, **kwargs):
-    # Get the number of parameters of the function
-    num_params = len(inspect.signature().parameters)
-
-    # Check if the required number of parameters for AIC is provided
-    if len(args) < num_params:
-        raise ValueError(f"Not enough parameters provided for calculate_one. Expected {num_params}, got {len(args)}.")
-
-    # Extract the first 'num_params' parameters for calculate_one
-    calculate_one_args = args[:num_params]
-
-    # Call calculate_one with the extracted parameters
-    result_calculate_one = calculate_one(*calculate_one_args)
-
-    # Call AIC with the result of calculate_one and the fixed parameter 'y'
-    result_AIC = AIC(result_calculate_one, y=3)
-
-    return result_AIC """
-
-
-# save results for each chi squared in a separate file/folder
-""" for aic in aic_values
-file_name = f'Omega_GW_alpha_{alpha}_vw_{vw}.csv'
-            file_path = os.path.join(folder_name4, file_name)
-            np.savetxt(file_path, data, delimiter=',', header='Frequency, AIC values', comments='')
-            print(f"For alpha = {alpha}, vw = {vw}, GW signal saved in {file_path}.") """
+        # Print the comparison of optimized and initial parameters
+        print(f"Comparison - Initial A={initial_params[0]}, Initial P={initial_params[1]}, Optimal A={A_opt}, Optimal P={P_opt}")
 
