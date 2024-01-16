@@ -37,7 +37,7 @@ def lisa_noise_1(f, A1, A2, alpha1, alpha2, A, P):
 
 
 # DWD Noise Robson & Cornish
-def lisa_noise_2(f, alpha, beta, gamma, k, A, P):
+def lisa_noise_2(f, alpha, beta, k, gamma, A, P):
     def DWD_noise_2(): 
         def Sc():
             A = 9e-45
@@ -62,12 +62,13 @@ def lisa_noise_2(f, alpha, beta, gamma, k, A, P):
     lisa_noise_2 = DWD + Sens
     return lisa_noise_2
 
-""" if __name__ == "__main__":
+if __name__ == "__main__":
     f_low = np.arange(0.00003, 0.001, 0.000001)
     f_middle = np.arange(0.001, 0.01, 0.00005)
     f_high = np.arange(0.01, 0.5, 0.001)
     frequencies = np.concatenate((f_low, f_middle, f_high)) 
     DWD_Noise_1 = lisa_noise_1(frequencies, 7.44e-14, 2.96e-7, -1.98, -2.6, 3, 15)
+    print(DWD_Noise_1[0:5])
     DWD_Noise_2 = lisa_noise_2(frequencies, 0.138, -221, 521, 1680, 3, 15)
     Sensitivity = Omega_N(frequencies, 3, 15)
     plt.loglog(frequencies, DWD_Noise_1, label='DWD Noise 1')
@@ -79,4 +80,4 @@ def lisa_noise_2(f, alpha, beta, gamma, k, A, P):
     plt.legend()
     plt.grid = 'True'
     plt.savefig('Lisa sensitivity + DWD noise fits')
-    plt.show() """
+    plt.show()

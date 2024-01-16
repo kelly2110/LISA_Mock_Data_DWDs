@@ -120,9 +120,9 @@ if __name__ == "__main__":
 
     plt.loglog(frequencies, Sensitivity, label='LISA Sensitvity')
     plt.loglog(frequencies, GW_model, label='GW Signal')
-    plt.loglog(frequencies, np.mean(DATA1, axis=1), label='LISA Noise')
+    #plt.loglog(frequencies, np.mean(DATA1, axis=1), label='LISA Noise')
     plt.loglog(frequencies, np.mean(DATA2, axis=1), label='DWD Noise 1')
-    plt.loglog(frequencies, np.mean(DATA3, axis=1), label='DWD Noise 2')
+    #plt.loglog(frequencies, np.mean(DATA3, axis=1), label='DWD Noise 2')
     plt.title(r'$LISA$' + " " + r'$\Omega$' + " " + '$Mock Data Generation$')
     plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
     plt.ylabel(r'$h^{2}\Omega(f)$')

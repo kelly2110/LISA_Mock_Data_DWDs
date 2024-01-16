@@ -18,6 +18,8 @@ And the following class:
 import numpy as np
 import math
 import pandas as pd
+from giese_lisa_sense_copy import Omega_N
+from SNR_calculation_copy import calculate_snr_
 import matplotlib.pyplot as plt
 try:
     from .espinosa import ubarf
@@ -343,21 +345,26 @@ class PowerSpectrum:
 
     #     return self.power_spectrum_sw_conservative(f) + self.power_spectrum_turb(f)
 
-frequencies = np.logspace(-6, 1, 2000)
-PS = PowerSpectrum(BetaoverH=100, Tstar=100, gstar=106.75, vw=0.7, adiabaticRatio=4/3, zp=10, alpha=0.0002, kturb=1.97/65, H_rstar=None, ubarf_in=None)
+f_low = np.arange(0.00003, 0.001, 0.000001)
+f_middle = np.arange(0.001, 0.01, 0.00005)
+f_high = np.arange(0.01, 0.5, 0.001)
+frequencies = np.concatenate((f_low, f_middle, f_high))
+PS = PowerSpectrum(BetaoverH=50, Tstar=180, gstar=106.75, vw=0.3, adiabaticRatio=4/3, zp=10, alpha=0.4, kturb=1.97/65, H_rstar=None, ubarf_in=None)
 GW = PowerSpectrum.power_spectrum_sw_conservative(PS, frequencies)
+Noise = Omega_N(frequencies, 3, 15)
 print(f"The peak frequency of the PS is: {PS.fsw()} mHz")
 print("The PS amplitude is:", PS.power_spectrum_sw(PS.fsw()))
 print("The conservative PS amplitude is:", PS.power_spectrum_sw_conservative(PS.fsw()))
 print("The value of H_rstar is:", PS.H_rstar)
 print("The value of the shock time is:", PS.H_tsh)
+snr = calculate_snr_(GW, Noise, frequencies)
 
 ratio = (PS.power_spectrum_sw(PS.fsw()))/PS.power_spectrum_sw_conservative(PS.fsw())
 ratio_inv = (PS.power_spectrum_sw_conservative(PS.fsw()))/PS.power_spectrum_sw(PS.fsw())
 print("the ratio between the original PS and the conservative PS is:", ratio)
 print("the ratio between the original PS and the conservative PS is:", ratio_inv)
 
-columns = ['f', ' omegaSens', ' omegaSW']
+""" columns = ['f', ' omegaSens', ' omegaSW']
 data = pd.read_csv("test3.csv", usecols=columns)
 array = data.to_numpy()
 f = array[:, 0]
@@ -375,4 +382,4 @@ plt.xlabel('Frequency (Hz)')
 plt.ylabel(r'$\Omega$')
 plt.title('Power Spectrum')
 plt.legend()
-plt.show()
+plt.show()"""

@@ -46,10 +46,10 @@ class PowerSpectrum:
         
 
     def calculate_amplitude(self): 
-        if self.H_rstar*self.T_sh < 1:
-            return min(self.T_sh, 1.0)*self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(3/2)*(self.H_rstar/np.sqrt(self.cs))**2
+        if self.T_sh < 1:
+            return self.h*self.h*0.687*self.Fgw_0*0.012*(self.K)**(3/2)*(self.H_rstar/self.cs)**2
         else:
-            return min(self.T_sh, 1.0)*self.h*self.h*2.061*self.Fgw_0*0.012*(self.K)**(2)*(self.H_rstar/self.cs)
+            return self.h*self.h*0.687*self.Fgw_0*0.012*(self.K)**(2)*(self.H_rstar/self.cs)
 
 
     @staticmethod  # Not dependent on the power spectrum itself, therefore static
@@ -69,12 +69,14 @@ if __name__ == "__main__":
 # Define the range of alpha values and increment
      # Object Creation
   start_time = time.time()
-  P1 = PowerSpectrum(0.3, 100, 100, 0.6)
+  P1 = PowerSpectrum(0.1, 100, 180, 0.4)
+  GW = P1.Omega_GW(frequencies, P1.Amp, P1.fp_0())
   Noise = Omega_N(frequencies, 3, 15)  # Mijn sensitivity curve
   print(f"The peak frequency of the PS is: {P1.fp_0()} mHz")
   print(f"The amplitude of the PS is: {P1.calculate_amplitude()}")
   print("The shock time is:", P1.T_sh)
   print("The value of H_rstar is:", P1.H_rstar)
+  snr = calculate_snr_(GW, Noise, frequencies)
  # PS plot
   plt.loglog(frequencies, P1.Omega_GW(frequencies, P1.Amp, P1.fp_0()), color = 'g', label='GW signal')
   plt.loglog(frequencies, Noise, color ='m', label='Noise signal')
