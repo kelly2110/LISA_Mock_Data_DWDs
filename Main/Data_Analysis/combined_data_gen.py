@@ -105,7 +105,7 @@ if __name__ == "__main__":
     f_middle = np.arange(0.001, 0.01, 0.00005)
     f_high = np.arange(0.01, 0.5, 0.001)
     frequencies = np.concatenate((f_low, f_middle, f_high))
-    PS = PowerSpectrum(0.6, 50, 180, 0.8)
+    PS = PowerSpectrum(0.4, 100, 180, 0.8)
     GW_model = PS.Omega_GW(frequencies, PS.Amp, PS.fp_0())
     DATA1 = make_data_no_DWD(frequencies, 94, PS)
     DATA2 = make_data_DWD_1(frequencies, 94, PS)
@@ -118,16 +118,16 @@ if __name__ == "__main__":
     print(f"RunTime: {elapsed_time} seconds")
 
 
-    plt.loglog(frequencies, Sensitivity, label='LISA Sensitvity')
-    plt.loglog(frequencies, GW_model, label='GW Signal')
-    #plt.loglog(frequencies, np.mean(DATA1, axis=1), label='LISA Noise')
-    plt.loglog(frequencies, np.mean(DATA2, axis=1), label='DWD Noise 1')
-    #plt.loglog(frequencies, np.mean(DATA3, axis=1), label='DWD Noise 2')
+    plt.loglog(frequencies, Sensitivity, label='LISA Sensitvity', color='b')
+    plt.loglog(frequencies, GW_model, label='GW Signal', color='k' )
+    plt.loglog(frequencies, np.mean(DATA1, axis=1), label='LISA Noise', color='y')
+    plt.loglog(frequencies, np.mean(DATA2, axis=1), label='DWD Noise 1', color='c')
+    plt.loglog(frequencies, np.mean(DATA3, axis=1), label='DWD Noise 2', color='m')
     plt.title(r'$LISA$' + " " + r'$\Omega$' + " " + '$Mock Data Generation$')
     plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')
     plt.ylabel(r'$h^{2}\Omega(f)$')
     plt.savefig('DWD Mock Data + LISA Sensitivity + GW Model')
-    plt.legend()
+    plt.legend() 
     plt.show()
 
 

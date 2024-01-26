@@ -6,7 +6,7 @@ from giese_lisa_sens import S_n, P_oms, P_acc, Omega_N
 from ps_rewritten import PowerSpectrum
 from combined_data_gen import make_data_DWD_1, make_data_DWD_2, make_data_no_DWD
 from noise import lisa_noise_1, lisa_noise_2
-from Main.Data_Analysis.SNR_calculation import calculate_snr_
+from SNR_calculation import calculate_snr_
 import time
 
 # Defining the chi-squared function
@@ -32,9 +32,9 @@ frequencies = np.concatenate((f_low, f_middle, f_high))
 N_c = 25
 
 # Generating the mock data, taking the mean and the standard deviation
-powerspectrum = PowerSpectrum(0.6, 50, 180, 0.8)
+powerspectrum = PowerSpectrum(0.45, 100, 180, 0.76)
 
-DATA = make_data_no_DWD(frequencies, N_c, powerspectrum)
+DATA = make_data_DWD_2(frequencies, N_c, powerspectrum)
 mean_sample_data = np.mean(DATA, axis=1) # Should probably include this in the function/class?
 standard_deviation = np.std(DATA, axis=1)
 
@@ -82,7 +82,7 @@ print(f"The run time is {run_time} seconds")
 optimized_signal = powerspectrum.Omega_GW(frequencies, optimized_Amp, optimized_f_p0)
 
 # Original signal
-original_signal = powerspectrum.Omega_GW(frequencies, initial_params[6], initial_params[7])
+original_signal = powerspectrum.Omega_GW(frequencies, powerspectrum.Amp, powerspectrum.fp_0())
 
 # SNR Calculations 
 
@@ -94,7 +94,7 @@ SNR = calculate_snr_(optimized_signal, Omega_N(frequencies, 3, 15), frequencies)
 
 # Plotting
 plt.loglog(frequencies, mean_sample_data, label = 'Generated Mock Data', color='b')
-plt.loglog(frequencies, original_signal, label='Original Signal', color='r')
+plt.loglog(frequencies, original_signal, label='Original Signal', color='c')
 plt.loglog(frequencies, optimized_signal, label='Reconstructed Signal', color='g')
 plt.loglog(frequencies, Omega_N(frequencies, 3, 15), label='LISA Sensitivity', color='k')
 plt.xlabel(r'$Frequency$' + "  " + r'$(Hz)$')

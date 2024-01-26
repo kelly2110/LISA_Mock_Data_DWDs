@@ -16,19 +16,19 @@ H_0 = (100 * h)/(3.09e19)
 def lisa_noise_1(f, A1, A2, alpha1, alpha2, A, P):
     
     def DWD_noise_1():
-        return (A1*(f/f_s)**alpha1)/(1 + A2*(f/f_s)**alpha2) # Broken power law
-            
-    def S_n(): #Strain sensitivity
-        return ((10/3)*(1+ 0.6*((2*pi*f*L/c)**2))*(P_oms() + (3 + np.cos((4*pi*f*L)/c))*P_acc()))/(((2*pi*f*L/c))**2)
-        
-    def P_oms():
+        return h*h*(A1*(f/f_s)**alpha1)/(1 + A2*((f/f_s)**alpha2)) # Broken power law
+                
+    def S_n(f, A, P): #Strain sensitivity
+        return ((10/3)*(1+ 0.6*((2*pi*f*L/c)**2))*(P_oms(f, P) + (3 + np.cos((4*pi*f*L)/c))*P_acc(f, A)))/(((2*pi*f*L/c))**2)
+
+    def P_oms(f,P):
         return (P**2)*((10**-12)**2)*((1 + (0.002/f)**4))*(((2*pi*f)/c)**2)
 
-    def P_acc():
-        return (A**2)*((10**-15)**2)*(1 + ((0.0004/f)**2))*(1 + (f/0.008)**4)*(1/(4*pi*pi*f*f*c*c))  
-            
+    def P_acc(f,A):
+        return (A**2)*((10**-15)**2)*(1 + ((0.0004/f)**2))*(1 + (f/0.008)**4)*(1/(4*pi*pi*f*f*c*c))
+
     def Omega_N():
-        return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n()
+        return ((h*h*4*(pi**2))/(3*H_0**2))*(f*f*f)*S_n(f, A, P)
 
     DWD = DWD_noise_1()
     Sens = Omega_N()
@@ -41,21 +41,21 @@ def lisa_noise_2(f, alpha, beta, k, gamma, A, P):
     def DWD_noise_2(): 
         def Sc():
             A = 9e-45
-            return A*f**(-7/3)*np.exp(-f**alpha + beta*f*np.sin(k*f))*(1 + np.tanh(gamma*(0.00113 - f)))
+            return h*h*A*f**(-7/3)*np.exp((-f**alpha) + beta*f*np.sin(k*f))*(1 + np.tanh(gamma*(0.00113 - f)))
 
         return (4*(pi)**2*f**3/(3*H_0**2))*Sc()
     
-    def S_n(): #Strain sensitivity
-        return ((10/3)*(1+ 0.6*((2*pi*f*L/c)**2))*(P_oms() + (3 + np.cos((4*pi*f*L)/c))*P_acc()))/(((2*pi*f*L/c))**2)
-        
-    def P_oms():
+    def S_n(f, A, P): #Strain sensitivity
+        return ((10/3)*(1+ 0.6*((2*pi*f*L/c)**2))*(P_oms(f, P) + (3 + np.cos((4*pi*f*L)/c))*P_acc(f, A)))/(((2*pi*f*L/c))**2)
+
+    def P_oms(f,P):
         return (P**2)*((10**-12)**2)*((1 + (0.002/f)**4))*(((2*pi*f)/c)**2)
 
-    def P_acc():
-        return (A**2)*((10**-15)**2)*(1 + ((0.0004/f)**2))*(1 + (f/0.008)**4)*(1/(4*pi*pi*f*f*c*c))  
-            
+    def P_acc(f,A):
+        return (A**2)*((10**-15)**2)*(1 + ((0.0004/f)**2))*(1 + (f/0.008)**4)*(1/(4*pi*pi*f*f*c*c))
+
     def Omega_N():
-        return ((2*(pi**2))/(3*H_0**2))*(f**3)*S_n()
+        return ((h*h*4*(pi**2))/(3*H_0**2))*(f*f*f)*S_n(f, A, P)
 
     DWD = DWD_noise_2()
     Sens = Omega_N()
