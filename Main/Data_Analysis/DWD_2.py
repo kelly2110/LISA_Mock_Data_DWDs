@@ -13,8 +13,8 @@ import os
 
 # Specifying the range of PT parameters to create the powerspectrum
 temperature_values = np.arange(180, 190, 10)
-alpha_values = np.arange(0.1, 0.4, 0.05).round(3)
-vw_values = np.arange(0.35,0.4,0.2).round(2)
+alpha_values = np.arange(0.25, 0.3, 0.05).round(3)
+vw_values = np.arange(0.5,0.6,0.1).round(2)
 beta_over_h = 100
 
 # Specifying the frequency range to be used
